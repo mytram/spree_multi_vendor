@@ -44,6 +44,13 @@ module Spree
 
     self.whitelisted_ransackable_attributes = %w[name state]
 
+    def self.like_any(fields, values)
+      conditions = fields.product(values).map do |(field, value)|
+        arel_table[field].matches("%#{value}%")
+      end
+      where conditions.inject(:or)
+    end
+
     def update_notification_email(email)
       update(notification_email: email)
     end
